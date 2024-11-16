@@ -150,7 +150,7 @@ def menu():
 
 
 def main():
-    students = []  # Empty list to store student information 
+    students = {}  # Empty list to store student information 
 
     while True:
         menu()  # Print the menu
@@ -163,7 +163,7 @@ def main():
                     if any(s.get_student_id() == new_student.get_student_id() for s in students):
                         print("Error: A student with this ID already exists. This student was not added.")
                     else:
-                        students.append(new_student)
+                        students[new_student]
                         print("Student added successfully.")
                         break
                 
@@ -218,6 +218,11 @@ def main():
 
         elif choice == 'd':
             while True:
+                student_display = [(s.get_first_name(), s.get_student_id()) for s in students]
+                print("Student List (Name, ID):")
+                for name, student_id in student_display:
+                    print(f"{name} (ID: {student_id})")
+                
                 # Display a student's information
                 student_id = input("Enter the student ID of the student to display: (if you would like to return type 'Done') ")
                 if student_id == 'Done':
