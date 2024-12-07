@@ -102,8 +102,11 @@ class Student:
             print(f" - {email}")
         print("Phone Numbers:")
         for phone in self.__phone_numbers:
-            print(f" - {phone}")
+            print(f" -{str(phone)}")
         print(f"Birth Date: {self.__birth_date}")
         print(f"Acceptance Date: {self.__acceptance_date}")
         print(f"Start Semester: {self.__start_semester}")
         print(f"Intended Major: {self.__intended_major}")
+
+
+

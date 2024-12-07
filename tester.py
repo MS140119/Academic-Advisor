@@ -32,20 +32,35 @@ def create_student():
     # Collect emails
     emails = []
     while True:
-        email_address = input("Enter email address (or 'done' to finish): ")
-        if email_address.lower() == "done":
-            break
-        email_type = input("Enter email type (e.g., personal, school): ")
-        emails.append(Email(email_address, email_type))
+        try:
+            phone_number = input("Enter phone number (or 'done' to finish): ").strip()
+            if phone_number.lower() == "done":
+                break
+            # Attempt to cast the input to an integer to validate it's numeric
+            int(phone_number.replace("-", "").replace(" ", ""))  # Allow dashes and spaces
+            phone_type = input("Enter phone type (e.g., mobile, home): ").strip()
+            phone_numbers.append(PhoneNumber(phone_number, phone_type))
+            print("Phone number added successfully.")
+        except ValueError:
+            print("Invalid input. Please enter a numeric phone number.")
 
     # Collect phone numbers
     phone_numbers = []
     while True:
-        phone_number = input("Enter phone number (or 'done' to finish): ")
+        phone_number = input("Enter phone number (or 'done' to finish): ").strip()
         if phone_number.lower() == "done":
             break
-        phone_type = input("Enter phone type (e.g., mobile, home): ")
-        phone_numbers.append(PhoneNumber(phone_number, phone_type))
+        try:
+            # Validate input by attempting to strip invalid characters
+            cleaned_number = "".join([char for char in phone_number if char.isdigit() or char in "+-() "])
+            if not cleaned_number:
+                raise ValueError("Phone number must contain digits.")
+            
+            phone_type = input("Enter phone type (e.g., mobile, home): ").strip()
+            phone_numbers.append(PhoneNumber(phone_number, phone_type))
+            print("Phone number added successfully.")
+        except ValueError as e:
+            print(f"Invalid input: {e}")
 
     # Date of birth with integer validation
     while True:
@@ -111,7 +126,7 @@ def edit_student(student):
     student.set_last_name(last_name)
     student.set_student_id(student_id)
     student.set_mailing_address(mailing_address)
-    student.set_phone_number(phone_number)
+    student.set_phone_numbers(phone_number)
 
 
 
@@ -146,101 +161,135 @@ def menu():
 
 
 
-
-
-
 def main():
-    students = {}  # Empty list to store student information 
+    
+    students = {
+        "S001": Student(
+            "Mark", "A", "Frank", "S001",
+            MailingAddress("123 Apple St", "Philadelphia", "Pa", 19008, "home"),
+            [Email("frank.bob@gmail.com", "personal")],
+            [PhoneNumber("123-456-7890", "mobile")],
+            Date(1, 1, 2000),
+            Date(8, 15, 2022),
+            Semester("Fall", 2022),
+            "Computer Science"
+        ),
+        "S002": Student(
+            "Jane", "B", "Smith", "S002",
+            MailingAddress("456 Oak St", "Springfield", "IL", 62705, "home"),
+            [Email("jane.smith@gmail.com", "personal"), Email("jane.smith@psu.edu", "school")],
+            [PhoneNumber("123-555-5678", "home")],
+            Date(12, 31, 1999),
+            Date(8, 15, 2021),
+            Semester("Fall", 2021),
+            "Biology"
+        )
+    }
 
     while True:
-        menu()  # Print the menu
+        menu()  # Display the menu options to the user
+
+        # Get the user's choice and convert it to lowercase for consistency
         choice = input("Choose an option: ").lower()
 
+        # Option 'a': Add a new student
         if choice == 'a':
             while True:
                 try:
-                    new_student = create_student()
-                    if any(s.get_student_id() == new_student.get_student_id() for s in students):
+                    new_student = create_student()  # Call the function to create a new student
+                    student_id = new_student.get_student_id()  # Retrieve the student ID
+                    
+                    # Check if the student ID already exists
+                    if student_id in students:
                         print("Error: A student with this ID already exists. This student was not added.")
                     else:
-                        students[new_student]
+                        # Add the new student to the dictionary
+                        students[student_id] = new_student
                         print("Student added successfully.")
-                        break
-                
+                    break  # Exit the loop after successfully adding the student
+
                 except ValueError:
-                    print("Please enter an actual input.")
+                    # Handle invalid input during student creation
+                    print("Please enter a valid input.")
 
+        # Option 'b': Edit an existing student's information
         elif choice == 'b':
-            while True:
-                # Display each student's first name and ID
-                student_display = [(s.get_first_name(), s.get_student_id()) for s in students]
-                print("Student List (Name, ID):")
-                for name, student_id in student_display:
-                    print(f"{name} (ID: {student_id})")
-                
-                # Prompt user for student ID to edit
-                student_id = input("Enter the student ID of the student to edit (or type 'exit' to quit): ")
-                if student_id.lower() == 'exit':
-                    print("Exiting edit mode.")
-                    break  # Exit the loop if the user types 'exit'
-                
-                student = next((s for s in students if s.get_student_id() == student_id), None)
-                if student:
-                    edit_student(student)
-                    print("Student information updated successfully.")
-                else:
-                    print("Student not found.")
+            if not students:  # Check if there are any students to edit
+                print("No students available to edit.")
+                break  # Exit if no students are available
 
+            # Display the list of students (Name and ID)
+            print("Student List (Name, ID):")
+            for student_id, student in students.items():
+                print(f"{student.get_first_name()} (ID: {student_id})")
+
+            # Prompt the user to enter the ID of the student to edit
+            student_id = input("Enter the student ID of the student to edit (or type 'exit' to quit): ")
+            if student_id.lower() == 'exit':  # Exit the edit mode
+                print("Exiting edit mode.")
+            elif student_id in students:
+                # Call the edit_student function to update the student's information
+                edit_student(students[student_id])
+                print("Student information updated successfully.")
+            else:
+                # Handle case where the entered student ID is not found
+                print("Student not found.")
+
+        # Option 'c': Delete an existing student
         elif choice == 'c':
-            while True:
-                student_display = [(s.get_first_name(), s.get_student_id()) for s in students]
-                print("Student List (Name, ID):")
-                for name, student_id in student_display:
-                    print(f"{name} (ID: {student_id})")
-                
-                # Prompt user for student ID to edit
-                student_id = input("Enter the student ID of the student to edit (or type 'exit' to quit): ")
-                if student_id.lower() == 'exit':
-                    print("Exiting edit mode.")
-                    break  # Exit the loop if the user types 'exit'
-                else:
-                    student = next((s for s in students if s.get_student_id() == student_id), None)
-                    if student:
-                        user_int = int('Are you sure you would like to delete this student (Type yes or no)')
-                        if user_int == 'yes':
-                            students.remove(student)
-                            print("Student deleted successfully.")
-                            break
-                        else:
-                            print('Ok, {student} will not be deleted')
-                    else:
-                        print("Student not found.")
+            if not students:  # Check if there are any students to delete
+                print("No students available to delete.")
+                continue  # Return to the menu if no students are available
 
+            # Display the list of students (Name and ID)
+            print("Student List (Name, ID):")
+            for student_id, student in students.items():
+                print(f"{student.get_first_name()} (ID: {student_id})")
+
+            # Prompt the user to enter the ID of the student to delete
+            student_id = input("Enter the student ID of the student to delete (or type 'exit' to quit): ")
+            if student_id.lower() == 'exit':  # Exit the delete mode
+                print("Exiting delete mode.")
+            elif student_id in students:
+                # Confirm deletion of the student
+                confirmation = input(f"Are you sure you want to delete student {students[student_id].get_first_name()}? (yes/no): ").lower()
+                if confirmation == 'yes':
+                    del students[student_id]  # Delete the student from the dictionary
+                    print("Student deleted successfully.")
+                else:
+                    print("Student not deleted.")  # Handle cancellation of deletion
+            else:
+                print("Student not found.")  # Handle case where the entered student ID is not found
+
+        # Option 'd': Display a student's information
         elif choice == 'd':
-            while True:
-                student_display = [(s.get_first_name(), s.get_student_id()) for s in students]
-                print("Student List (Name, ID):")
-                for name, student_id in student_display:
-                    print(f"{name} (ID: {student_id})")
-                
-                # Display a student's information
-                student_id = input("Enter the student ID of the student to display: (if you would like to return type 'Done') ")
-                if student_id == 'Done':
-                    break
-                else:
-                    student = next((s for s in students if s.get_student_id() == student_id), None)
-                    if student:
-                        display_student(student)
-                    else:
-                        print("Student not found.")
+            if not students:  # Check if there are any students to display
+                print("No students available to display.")
+                continue  # Return to the menu if no students are available
 
+            # Display the list of students (Name and ID)
+            print("Student List (Name, ID):")
+            for student_id, student in students.items():
+                print(f"{student.get_first_name()} (ID: {student_id})")
+
+            # Prompt the user to enter the ID of the student to display
+            student_id = input("Enter the student ID of the student to display (or type 'done' to return): ")
+            if student_id.lower() == 'done':  # Allow the user to return to the main menu
+                continue
+            elif student_id in students:
+                # Call the display_student function to show the student's details
+                display_student(students[student_id])
+            else:
+                print("Student not found.")  # Handle case where the entered student ID is not found
+
+        # Option 'e': Exit the program
         elif choice == 'e':
-            print("Thank you for using the student academic advisor.")
-            break
+            print("Thank you for using the student academic advisor.")  # Farewell message
+            break  # Exit the program
 
+        # Handle invalid menu choice
         else:
             print("Invalid choice. Please select a valid option.")
-
 
 if __name__ == "__main__":
     main()
