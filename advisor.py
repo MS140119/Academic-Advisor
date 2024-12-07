@@ -36,3 +36,12 @@ class Advisor:
     
     def get_department(self):
         return self.__department
+    
+
+    def __str__(self):
+        return f'Advisor/n
+                First name: {self.__frist_name}/n
+                Middle namae: {self.__middle_name}/n
+                Last name: {self.__last_name}/n
+                Title: {self.__title}/n
+                Department: {self.__department}/n'
