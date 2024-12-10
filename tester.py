@@ -6,7 +6,7 @@ from email import Email
 from phone_number import PhoneNumber
 from semester_class import Semester
 from student_class import Student
-
+from node import Node
 
 def create_student():
     # Get basic information from the user

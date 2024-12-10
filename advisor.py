@@ -1,4 +1,5 @@
 from linked_list import LinkedList
+from node import Node
 
 class Advisor:
     def __init__(self, first_name, middle_name, last_name, title, department):
