@@ -1,3 +1,5 @@
+from linked_list import LinkedList
+
 class Advisor:
     def __init__(self, first_name, middle_name, last_name, title, department):
         self.__first_name = first_name
@@ -5,6 +7,16 @@ class Advisor:
         self.__last_name = last_name
         self.__title = title
         self.__department = department
+        self.__advisees = LinkedList()
+
+    def add_advisee(self, student): #adds a student to the linked list of the advisees
+        self.__advisees.add(student)
+    
+    def remove_advisees(self, student_id): #removes the student from the linked list by there ID's
+        if self.__advisees.remove(student_id):
+            print(f'Advisee with ID {student_id} has been removed.')
+        else:
+            print(f'Sorry but no advisee with ID {student_id} has been found.')
 
     def set_first_name(self,first_name):
         self.__first_name = first_name
@@ -39,9 +51,11 @@ class Advisor:
     
 
     def __str__(self):
-        return f'Advisor/n
-                First name: {self.__frist_name}/n
-                Middle namae: {self.__middle_name}/n
-                Last name: {self.__last_name}/n
-                Title: {self.__title}/n
-                Department: {self.__department}/n'
+        return (
+        f"Advisor:\n"
+        f"First name: {self.__first_name}\n"
+        f"Middle name: {self.__middle_name}\n"
+        f"Last name: {self.__last_name}\n"
+        f"Title: {self.__title}\n"
+        f"Department: {self.__department}\n"
+    )

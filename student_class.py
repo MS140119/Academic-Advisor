@@ -1,3 +1,4 @@
+from linked_list import LinkedList
 from mailing_address import MailingAddress
 from date import Date
 from email import Email
@@ -17,7 +18,24 @@ class Student:
         self.__acceptance_date = acceptance_date
         self.__start_semester = start_semester
         self.__intended_major = intended_major
+        self.__courses = LinkedList()
 
+    def add_course(self, course):       
+        self.__courses.add(course)
+        print(f"Course {course.get_course_num()} added.")
+
+    def remove_course(self, course_num):
+        current = self.__courses.head
+        while current:
+            if current.data.get_course_num() == course_num:
+                self.__courses.remove(course_num)
+                print(f"Course {course_num} removed.")
+                return
+            current = current.next
+        print(f"Course {course_num} not found.")
+
+    def get_all_courses(self):
+        return str(self.__courses)
 
 
     def set_first_name(self, first_name): #setting first name
@@ -107,6 +125,17 @@ class Student:
         print(f"Acceptance Date: {self.__acceptance_date}")
         print(f"Start Semester: {self.__start_semester}")
         print(f"Intended Major: {self.__intended_major}")
+
+
+
+    def __str__(self): #Display student details along with courses
+        return (
+        f"Student:\n"
+        f"Name: {self.__first_name} {self.__middle_name} {self.__last_name}\n"
+        f"ID: {self.__student_id}\n"
+        f"Intended Major: {self.__intended_major}\n"
+        f"Courses:\n{self.get_all_courses()}"
+    )
 
 
 

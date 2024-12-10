@@ -1,3 +1,5 @@
+from advisor import Advisor
+from course import Course
 from mailing_address import MailingAddress
 from date import Date
 from email import Email
@@ -32,17 +34,11 @@ def create_student():
     # Collect emails
     emails = []
     while True:
-        try:
-            phone_number = input("Enter phone number (or 'done' to finish): ").strip()
-            if phone_number.lower() == "done":
-                break
-            # Attempt to cast the input to an integer to validate it's numeric
-            int(phone_number.replace("-", "").replace(" ", ""))  # Allow dashes and spaces
-            phone_type = input("Enter phone type (e.g., mobile, home): ").strip()
-            phone_numbers.append(PhoneNumber(phone_number, phone_type))
-            print("Phone number added successfully.")
-        except ValueError:
-            print("Invalid input. Please enter a numeric phone number.")
+        email_address = input("Enter email address (or 'done' to finish): ")
+        if email_address.lower() == "done":
+            break
+        email_type = input("Enter email type (e.g., personal, school): ")
+        emails.append(Email(email_address, email_type))
 
     # Collect phone numbers
     phone_numbers = []
@@ -157,11 +153,16 @@ def menu():
     print("b. Edit an existing student")
     print("c. Delete a student")
     print("d. Display a student's information")
-    print("e. Exit")
+    print('e. Manage Advisor (add/remove/display)') #Managing advisor
+    print("f. Manage courses") #Managing courses
+    print('g. Exit. Thank you!')
 
 
 
 def main():
+    #Creating a instance below
+    advisor = Advisor('Mohammad', 'A', 'Hoque', 'Professor', 'CS')
+    
     
     students = {
         "S001": Student(
@@ -281,9 +282,70 @@ def main():
                 display_student(students[student_id])
             else:
                 print("Student not found.")  # Handle case where the entered student ID is not found
-
-        # Option 'e': Exit the program
+        
+    
+        # Option 'e' to manage advisor
         elif choice == 'e':
+            print('\n -- Advisor Management --')
+            print('1. Add an advisee')
+            print('2. Remove an advisee')
+            print('3. Display advisee info')
+            sub_choice = input('Choose an option between 1 and 3: ').strip()
+
+            if sub_choice == '1':
+                student_id = input('Enter student ID to add as advisee: ').strip()
+                if student_id in students:
+                    advisor.add_advisee(students[student_id])
+                    print(f'Student {students[student_id].get_first_name()} added as an advisee.')
+                else:
+                    print('Student not found')
+            
+            elif sub_choice == '2':  # Remove an advisee
+                student_id = input("Enter student ID to remove as advisee: ")
+                advisor.remove_advisee(student_id)
+            
+            elif sub_choice == '3':
+                print(advisor)
+            
+            else:
+                print('invalid choice sorry')
+
+        #Option 'f' to manage courses for a student
+        elif choice == 'f':
+            student_id = input("Enter the student ID: ").strip()
+            if student_id in students:  # Check if the student exists
+                student = students[student_id]
+                print("\n--- Course Management ---")
+                print("1. Add a course")
+                print("2. Remove a course")
+                print("3. Display all courses")
+                sub_choice = input("Choose an option: ").strip()
+                
+                if sub_choice == '1':  # Add a course
+                    course_num = input("Enter course number (e.g., CMPSC 122): ").strip()
+                    semester = input("Enter semester (e.g., Spring 2023): ").strip()
+                    delivery = input("Enter delivery method (in-person/hybrid/remote): ").strip()
+                    status = input("Enter status (completed/dropped/on-going): ").strip()
+                    grade = input("Enter grade (A/B/C/D/F/N/A): ").strip()
+                    course = Course(course_num, semester, delivery, status, grade)
+                    student.add_course(course)
+                    print("Course added successfully.")
+
+                elif sub_choice == '2':  # Remove a course
+                    course_num = input("Enter course number to remove: ").strip()
+                    student.remove_course(course_num)
+                
+                elif sub_choice == '3':  # Display all courses
+                    print(f"Courses for {student.get_first_name()}:\n{student.get_all_courses()}")
+                
+                else:
+                    print("Invalid choice. Please select a valid option (1-3).")
+                
+            else:
+                print("Student not found. Please enter a valid student ID.")
+
+        # Option 'g': Exit the program
+        elif choice == 'g':
             print("Thank you for using the student academic advisor.")  # Farewell message
             break  # Exit the program
 

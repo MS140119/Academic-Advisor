@@ -41,8 +41,10 @@ class Course:
 
 
     def __str__(self):
-        return f'Course:{self.__course_num}/n
-                Semester: {self.__semester_taken}/n,
-                Delivery method: {self.__delivery_meth}/n
-                Status: {self.__status}/n
-                Grade: {self.__grade}/n'
+        return (
+        f"Course: {self.__course_num}\n"
+        f"Semester: {self.__semester_taken}\n"
+        f"Delivery method: {self.__delivery_meth}\n"
+        f"Status: {self.__status}\n"
+        f"Grade: {self.__grade}\n"
+    )
